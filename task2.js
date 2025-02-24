@@ -25,15 +25,11 @@ scene.add(pointLight);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
 directionalLight.position.set(-5, 8, 5);
 directionalLight.castShadow = true;
-directionalLight.shadow.mapSize.width = 2048;
-directionalLight.shadow.mapSize.height = 2048;
 scene.add(directionalLight);
 
 const spotLight = new THREE.SpotLight(0xffffff, 3, 10, Math.PI / 6, 0.5);
 spotLight.position.set(0, 1, 0);
 spotLight.castShadow = true;
-spotLight.shadow.mapSize.width = 4096;
-spotLight.shadow.mapSize.height = 4096;
 scene.add(spotLight);
 
 const floorGeometry = new THREE.PlaneGeometry(20, 20);
