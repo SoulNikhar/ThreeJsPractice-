@@ -1,8 +1,32 @@
-# React + Vite
+# React + Vite Project 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a minimal setup to get React working in Vite 
 
-Currently, two official plugins are available:
+## Steps to Set Up the Project
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 1. Clone the Repository
+Clone the repository to your local machine:
+```bash
+git clone https://github.com/SoulNikhar/ThreeJsPractice-
+```
+### 2. Install Project Dependencies
+Install the required dependencies using npm::
+```bash
+npm install
+```
+### 3. Additional Project Dependencies
+some more are :
+```bash
+npm install three gsap lil-gui
+```
+
+### 4. Run the Development Server
+Start the Vite development server:
+
+```bash
+npm run dev
+```
+
+You can now access the project at http://localhost:3000.
+
+
