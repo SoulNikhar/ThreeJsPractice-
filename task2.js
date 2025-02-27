@@ -18,7 +18,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
 scene.add(ambientLight);
 
 const pointLight = new THREE.PointLight(0xffffff, 2);
-pointLight.position.set(0, 3, 0);
+pointLight.position.set(0, 3, 1);
 pointLight.castShadow = true;
 scene.add(pointLight);
 
@@ -27,10 +27,20 @@ directionalLight.position.set(-5, 8, 5);
 directionalLight.castShadow = true;
 scene.add(directionalLight);
 
-const spotLight = new THREE.SpotLight(0xffffff, 3, 10, Math.PI / 6, 0.5);
-spotLight.position.set(0, 1, 0);
+const spotLight = new THREE.SpotLight(0xffffff, 10, 20 , Math.PI / 2);
+spotLight.position.set(3, 4, 0);
 spotLight.castShadow = true;
 scene.add(spotLight);
+
+const hemisphereLight = new THREE.HemisphereLight(0x00ffff , 0xff00ff, 10);
+hemisphereLight.position.set(1.5,-1,1);
+scene.add(hemisphereLight);
+
+
+// const helper = new THREE.CameraHelper(spotLight.shadow.camera);
+// scene.add(helper);
+
+
 
 const floorGeometry = new THREE.PlaneGeometry(20, 20);
 const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.8 });
@@ -63,6 +73,30 @@ mesh4.position.set(4, 1, 0);
 mesh4.castShadow = true;
 scene.add(mesh4);
 
+const material5 = new THREE.MeshLambertMaterial({ color: 0x00ffff });
+const mesh5 = new THREE.Mesh(new THREE.BoxGeometry(), material5);
+mesh5.position.set(-4, 1, 2);
+mesh5.castShadow = true;
+scene.add(mesh5);
+
+const material6 = new THREE.MeshToonMaterial({ color: 0xff00ff  });
+const mesh6 = new THREE.Mesh(new THREE.BoxGeometry(), material6);
+mesh6.position.set(-1.5, 1, 2);
+mesh6.castShadow = true;
+scene.add(mesh6);
+
+const material7 = new THREE.MeshNormalMaterial();
+const mesh7 = new THREE.Mesh(new THREE.BoxGeometry(), material7);
+mesh7.position.set(1.5, 1, 2);
+mesh7.castShadow = true;
+scene.add(mesh7);
+
+const material8 = new THREE.MeshMatcapMaterial();
+const mesh8 = new THREE.Mesh(new THREE.BoxGeometry(), material8);
+mesh8.position.set(4, 1, 2);
+mesh8.castShadow = true;
+scene.add(mesh8);
+
 const gui = new GUI();
 const lightFolder = gui.addFolder('Light Controls');
 lightFolder.add(ambientLight, 'intensity', 0, 10, 0.01).name('Ambient Light');
@@ -71,10 +105,42 @@ lightFolder.add(directionalLight, 'intensity', 0, 10, 0.01).name('Directional Li
 lightFolder.add(spotLight, 'intensity', 0, 10, 0.01).name('Spot Light');
 lightFolder.open();
 
+
+document.addEventListener('keydown' , (event) =>{
+    console.log(event);
+    switch (event.key) {
+        case '1':
+            ambientLight.visible = !ambientLight.visible;
+            break;
+        case '2':
+            pointLight.visible = !pointLight.visible;
+            break;
+        case '3':
+            directionalLight.visible = !directionalLight.visible;
+            break;
+        case '4':
+            spotLight.visible = !spotLight.visible;
+            break;
+        case '5':
+            hemisphereLight.visible = !hemisphereLight.visible;
+            break;
+    
+        default:
+            break;
+    }  
+})
+
+
 function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
     renderer.render(scene, camera);
+    requestAnimationFrame(animate);
 }
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
 
 animate();
