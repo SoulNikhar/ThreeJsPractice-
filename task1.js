@@ -13,11 +13,10 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
-controls.screenSpacePanning = false;
 controls.maxPolarAngle = Math.PI;
 
 const params = {
-    width: 1,
+    width: 2,
     height: 1,
     depth: 1,
     color: 0x00ff00,
@@ -46,11 +45,10 @@ function updateColor(value) {
 }
 
 function animate() {
-    requestAnimationFrame(animate);
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
-    controls.update();
     renderer.render(scene, camera);
+    requestAnimationFrame(animate);
 }
 
 window.addEventListener('resize', () => {
