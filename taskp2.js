@@ -25,11 +25,13 @@ const boxGeometry = new THREE.BoxGeometry(3, 3, 3);
 const boxMaterial = new THREE.MeshStandardMaterial({ color: 0xfffff, wireframe: true });
 const boxMesh = new THREE.Mesh(boxGeometry, boxMaterial);
 
-const sphereGeometry = new THREE.SphereGeometry(1, 32, 32);
-sphereGeometry.translate(1, 0, 0);
+const sphereGeometry = new THREE.SphereGeometry(2, 32, 32);
+sphereGeometry.translate(2, 0, 0);
 const sphereMaterial = new THREE.MeshStandardMaterial({ color: 0x0000ff, wireframe: true });
 const sphereMesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
 
+// scene.add(boxMesh);
+// scene.add(sphereMesh);
 
 const csgBox = CSG.fromMesh(boxMesh, 0);
 const csgSphere = CSG.fromMesh(sphereMesh, 0);
@@ -43,4 +45,13 @@ function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
 }
+animate();
+
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
 animate();
