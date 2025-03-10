@@ -1,145 +1,74 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
-camera.position.set(0, 500, 700);
+scene.background = new THREE.Color(0x111111);
 
-const renderer = new THREE.WebGLRenderer();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(450, 280, -290);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
- 
-const rectWidth = 1000, rectHeight = 900;
+const origin = new THREE.Vector3(10, 0, 0);
+const lengthBottom = 200;
+const lengthTop = 120;
+const height = 100;
+const offset = (lengthBottom - lengthTop) / 2;
+
 const shape = new THREE.Shape();
-shape.moveTo(-rectWidth / 2, -rectHeight / 2);
-shape.lineTo(rectWidth / 2, -rectHeight / 2);
-shape.lineTo(rectWidth / 2, rectHeight / 2);
-shape.lineTo(-rectWidth / 2, rectHeight / 2);
-shape.lineTo(-rectWidth / 2, -rectHeight / 2);
-
-
-const radius = 10;
-const cols = 3; 
-const rows = 4; 
-
-const colSpacing = rectWidth / (cols + 1);  
-const rowSpacing = rectHeight / (rows + 1); 
-
-
-for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < cols; j++) {
-        const x = -rectWidth / 2 + (j + 1) * colSpacing;
-        const y = -rectHeight / 2 + (i + 1) * rowSpacing;
-        const hole = new THREE.Path();
-        hole.absarc(x, y, radius, 0, Math.PI * 2);
-        shape.holes.push(hole);
-    }
-}
- 
+shape.moveTo(origin.x, origin.y);
+shape.lineTo(origin.x + lengthBottom, origin.y);
+shape.lineTo(origin.x + lengthBottom - offset, origin.y + height);
+shape.lineTo(origin.x + offset, origin.y + height);
+shape.lineTo(origin.x, origin.y);
 
 const extrudeSettings = {
-    depth: 20,
+  depth: 30,
 };
+
 const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-const material = new THREE.MeshBasicMaterial({ color: 0x0077ff, wireframe: false });
+const material = new THREE.MeshPhysicalMaterial({
+  color: 0xff0000,
+  side: THREE.DoubleSide,
+  roughness: 0.4,
+  metalness: 0.5,
+  clearcoat: 1.0,
+  clearcoatRoughness: 0.1,
+  wireframe: true,
+});
 const mesh = new THREE.Mesh(geometry, material);
+mesh.castShadow = true;
+mesh.receiveShadow = true;
 scene.add(mesh);
 
-// Handle window resize
-window.addEventListener('resize', () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+const edgeMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+const edges = new THREE.EdgesGeometry(geometry);
+const line = new THREE.LineSegments(edges, edgeMaterial);
+scene.add(line);
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+directionalLight.position.set(0, 100, 100);
+directionalLight.castShadow = true;
+scene.add(directionalLight);
+
+const ambientLight = new THREE.AmbientLight(0x555555);
+scene.add(ambientLight);
+
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Animation loop
 function animate() {
-    controls.update();
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
 }
+
 animate();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ----------------- Hard code Way -----------------
-// import * as THREE from 'three';
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-
-// const scene = new THREE.Scene();
-// const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
-// camera.position.set(0, 50, 700);
-
-// const renderer = new THREE.WebGLRenderer();
-// renderer.setSize(window.innerWidth, window.innerHeight);
-// document.body.appendChild(renderer.domElement);
-
-// const controls = new OrbitControls(camera, renderer.domElement);
-
-
-// const shape = new THREE.Shape();
-// const rectWidth = 500, rectHeight = 300;
-// shape.moveTo(-rectWidth / 2, -rectHeight / 2);
-// shape.lineTo(rectWidth / 2, -rectHeight / 2);
-// shape.lineTo(rectWidth / 2, rectHeight / 2);
-// shape.lineTo(-rectWidth / 2, rectHeight / 2);
-// shape.lineTo(-rectWidth / 2, -rectHeight / 2);
-
-
-// const radius = 50;
-// const holePositions = [
-//     [-175, 75], [0, 75], [170, 75],
-//     [-175, -75], [0, -75], [170, -75]
-// ];
-
-
-// holePositions.forEach(([x, y]) => {
-//     const hole = new THREE.Path();
-//     hole.absarc(x, y, radius, 0, Math.PI * 2);
-//     shape.holes.push(hole);
-// });
-
-
-// const extrudeSettings = {
-//     depth: 200,
-// };
-// const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-// const material = new THREE.MeshBasicMaterial({ 
-//     color: 0x0077ff, 
-//     wireframe: false,
-//     side: THREE.DoubleSide
-// });
-
-
-// const mesh = new THREE.Mesh(geometry, material);
-// scene.add(mesh);
-
-
-// window.addEventListener('resize', () => {
-//     renderer.setSize(window.innerWidth, window.innerHeight);
-//     camera.aspect = window.innerWidth / window.innerHeight;
-//     camera.updateProjectionMatrix();
-// });
-
-
-// function animate() {
-//     requestAnimationFrame(animate);
-//     controls.update();
-//     renderer.render(scene, camera);
-// }
-// animate();
