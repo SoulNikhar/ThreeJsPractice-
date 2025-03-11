@@ -1,32 +1,29 @@
 import * as THREE from 'three';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
-// Create a scene
 const scene = new THREE.Scene();
 
-// Create a camera
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 0, 10);
 
-// Create a renderer
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
 
-// Define the square shape
 const shape = new THREE.Shape();
 shape.moveTo(-1, -1);
 shape.lineTo(1, -1);
 shape.lineTo(1, 1);
 shape.lineTo(-1, 1);
-shape.lineTo(-1, -1);  // Closing the square
+shape.lineTo(-1, -1);
 
-// Define a custom path curve
+debugger;
 class CustomCurve extends THREE.Curve {
-    constructor() {
-        super();
-    }
+
     getPoint(t) {
-        const direction = 'x';  // Change this to 'x', '-x', 'y', '-y', 'z', '-z'
+        const direction = '';
         switch (direction) {
             case 'x': return new THREE.Vector3(5 * t, 0, 0);
             case '-x': return new THREE.Vector3(-5 * t, 0, 0);
@@ -34,26 +31,25 @@ class CustomCurve extends THREE.Curve {
             case '-y': return new THREE.Vector3(0, -5 * t, 0);
             case 'z': return new THREE.Vector3(0, 0, 5 * t);
             case '-z': return new THREE.Vector3(0, 0, -5 * t);
-            default: return new THREE.Vector3(5 * t, 0, 0);
+            case 'xy': return new THREE.Vector3(5 * t, 5 * t, 0);
+            default: return new THREE.Vector3(-5 * t, -5 * t, 0);
         }
     }
 }
 const customPath = new CustomCurve();
 
-// Extrusion settings using the path
 const extrudeSettings = {
-    steps: 50,   // Number of segments along the path
+    steps: 50,
     bevelEnabled: false,
     extrudePath: customPath
 };
 
-// Create extruded geometry
+
 const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
 const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
-// Animation loop
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
