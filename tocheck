@@ -2,68 +2,64 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 const scene = new THREE.Scene();
-
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-camera.position.set(0, 0, 10);
+camera.position.set(0, 0, 20);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 
-const shape = new THREE.Shape();
-shape.moveTo(-1, -1);
-shape.lineTo(1, -1);
-shape.lineTo(1, 1);
-shape.lineTo(-1, 1);
-shape.lineTo(-1, -1);
+const origin = new THREE.Vector2(0, 0);
+// console.log(origin.x, origin.y);
 
+const height = 2,
+  width = 2;
+const shape = new THREE.Shape();
+shape.moveTo(origin.x, origin.y);
+shape.lineTo(origin.x + width, origin.y);
+shape.lineTo(origin.x + width, origin.y + height);
+shape.lineTo(origin.x + width + width, origin.y + height);
+shape.lineTo(origin.x + width + width, origin.y + height + height);
+shape.lineTo(origin.x + width, origin.y + height + height);
+shape.lineTo(origin.x + width, origin.y + height + height + height);
+shape.lineTo(origin.x, origin.y + height + height + height);
+shape.lineTo(origin.x, origin.y + height + height);
+shape.lineTo(origin.x - width, origin.y + height + height);
+shape.lineTo(origin.x - width, origin.y + height);
+shape.lineTo(origin.x, origin.y + height);
+shape.lineTo(origin.x, origin.y); // Close the shape
+
+const extrudeLength = 10;
 class CustomCurve extends THREE.Curve {
   getPoint(t) {
-    const direction = "x";
-    switch (direction) {
-      case "x":
-        return new THREE.Vector3(5 * t, 0, 0);
-      case "-x":
-        return new THREE.Vector3(-5 * t, 0, 0);
-      case "y":
-        return new THREE.Vector3(0, 5 * t, 0);
-      case "-y":
-        return new THREE.Vector3(0, -5 * t, 0);
-      case "z":
-        return new THREE.Vector3(0, 0, 5 * t);
-      case "-z":
-        return new THREE.Vector3(0, 0, -5 * t);
-      case "xy":
-        return new THREE.Vector3(5 * t, 5 * t, 0);
-      default:
-        return new THREE.Vector3(-5 * t, -5 * t, 0);
-    }
+    return new THREE.Vector3(extrudeLength * t, 0, 0);
   }
 }
 const customPath = new CustomCurve();
 
 const extrudeSettings = {
-  steps: 5,
   bevelEnabled: false,
+  steps: 1,
   extrudePath: customPath,
 };
 
 const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
 const material = new THREE.MeshBasicMaterial({
-  color: 0x00ff00,
-  wireframe: true,
+  color: "#ff0000",
+  wireframe: false,
 });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
 const vertices = [];
 const positionAttribute = geometry.attributes.position;
+
 for (let i = 0; i < positionAttribute.count; i++) {
   const x = positionAttribute.getX(i);
   const y = positionAttribute.getY(i);
@@ -75,60 +71,90 @@ const uniqueVertices = [...new Set(vertices.map((v) => JSON.stringify(v)))].map(
   (v) => JSON.parse(v)
 );
 
+// console.log(uniqueVertices);
+
 const maxX = Math.max(...uniqueVertices.map((v) => v[0]));
 const lastCrossSection = uniqueVertices.filter((v) => v[0] === maxX);
 
 const previousXValues = uniqueVertices.map((v) => v[0]).filter((x) => x < maxX);
+const secondMaxX =
+  previousXValues.length > 0 ? Math.max(...previousXValues) : null;
+const previousCrossSection =
+  secondMaxX !== null ? uniqueVertices.filter((v) => v[0] === secondMaxX) : [];
 
-if (previousXValues.length > 0) {
-  const secondMaxX = Math.max(...previousXValues);
-  var previousCrossSection = uniqueVertices.filter((v) => v[0] === secondMaxX);
-} else {
-  var previousCrossSection = [];
+const distBetweenPointsPerpendicular =
+  lastCrossSection[0][0] - previousCrossSection[0][0];
+const distBetweenPointsBase = height;
+
+let actualMaxAngle = Math.atan(
+  distBetweenPointsPerpendicular / distBetweenPointsBase
+);
+// console.log(actualMaxAngle * (180 / Math.PI));
+
+var angleDegrees = 28;
+if (angleDegrees > actualMaxAngle * (180 / Math.PI)) {
+  angleDegrees = actualMaxAngle * (180 / Math.PI);
 }
 
-console.log("Last 4 Points:", lastCrossSection);
-console.log("Previous 4 Points:", previousCrossSection);
+const angleRadians = angleDegrees * (Math.PI / 180);
+const distToMove = distBetweenPointsBase * Math.tan(angleRadians);
 
-// lastCrossSection.forEach((v) => {
-//   const sphereGeometry = new THREE.SphereGeometry(0.1, 16, 16);
-//   const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red
-//   const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-//   sphere.position.set(v[0], v[1], v[2]);
-//   scene.add(sphere);
-// });
+const verticesAtZero = uniqueVertices.filter((v) => v[0] === 0);
+const verticesAtExtrudeLength = uniqueVertices.filter(
+  (v) => v[0] === extrudeLength
+);
 
-// previousCrossSection.forEach((v) => {
-//   const sphereGeometry = new THREE.SphereGeometry(0.1, 16, 16);
-//   const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff }); // Blue
-//   const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-//   sphere.position.set(v[0], v[1], v[2]);
-//   scene.add(sphere);
-// });
+console.log(verticesAtZero, verticesAtExtrudeLength);
 
-//  v1 = [5, 1, 1];    v2 = [5, 1, -1];
-//  v3 = [5, -1, 1];     v4 = [5, -1, -1];
+const verticesToUpdate1 = verticesAtZero
+  .filter(([x, y, z]) => !(x === 0 && y === 0 && (z === -2 || z === 0)))
+  .map((v) => ({
+    old: v,
+    new: [v[0] + distToMove * (v[1] / 2), v[1], v[2]],
+  }));
 
-const v1 = [5, 1, 1];
-const v2 = [2.5, 1, 1];
-const v3 = [5, 1, -1];
-const v4 = [2.5, 1, -1];
+const verticesToUpdate2 = verticesAtExtrudeLength
+  .filter(([x, y, z]) => !(x === extrudeLength && y === 0 && (z === -2 || z === 0)))
+  .map((v) => ({
+    old: v,
+    new: [v[0] - distToMove * (v[1] / 2), v[1], v[2]],
+  }));
 
-for (let i = 0; i < positionAttribute.count; i++) {
-  const x = positionAttribute.getX(i);
-  const y = positionAttribute.getY(i);
-  const z = positionAttribute.getZ(i);
+console.log(verticesToUpdate1 , verticesToUpdate2);
 
-  if (x === v1[0] && y === v1[1] && z === v1[2]) {
-    positionAttribute.setXYZ(i, v2[0], v2[1], v2[2]);
+verticesToUpdate1.forEach(({ old: oldVertex, new: newVertex }) => {
+  for (let i = 0; i < positionAttribute.count; i++) {
+    const x = positionAttribute.getX(i);
+    const y = positionAttribute.getY(i);
+    const z = positionAttribute.getZ(i);
+
+    if (x === oldVertex[0] && y === oldVertex[1] && z === oldVertex[2]) {
+      positionAttribute.setXYZ(i, newVertex[0], newVertex[1], newVertex[2]);
+    }
   }
-  if (x === v3[0] && y === v3[1] && z === v3[2]) {
-    positionAttribute.setXYZ(i, v4[0], v4[1], v4[2]);
+});
+verticesToUpdate2.forEach(({ old: oldVertex, new: newVertex }) => {
+  for (let i = 0; i < positionAttribute.count; i++) {
+    const x = positionAttribute.getX(i);
+    const y = positionAttribute.getY(i);
+    const z = positionAttribute.getZ(i);
+
+    if (x === oldVertex[0] && y === oldVertex[1] && z === oldVertex[2]) {
+      positionAttribute.setXYZ(i, newVertex[0], newVertex[1], newVertex[2]);
+    }
   }
-}
+});
 positionAttribute.needsUpdate = true;
 geometry.computeVertexNormals();
 mesh.geometry = geometry;
+
+const edgeMaterial = new THREE.LineBasicMaterial({
+  color: 0xffffff,
+  linewidth: 80,
+});
+const edges = new THREE.EdgesGeometry(geometry);
+const line = new THREE.LineSegments(edges, edgeMaterial);
+mesh.add(line);
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -141,38 +167,3 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
-
-// import * as THREE from "three";
-
-// // Assuming you already have a mesh with extruded geometry
-// const geometry = mesh.geometry;  // Your existing geometry
-
-// // Get the position attribute
-// const positionAttribute = geometry.attributes.position;
-
-// // Find the index of v1 in the geometry (you can use any condition to find it)
-// const v1 = [1, 1, 1];  // Example initial vertex (v1)
-// const v2 = [2, 2, 2];  // Example target vertex (v2)
-
-// for (let i = 0; i < positionAttribute.count; i++) {
-//   const x = positionAttribute.getX(i);
-//   const y = positionAttribute.getY(i);
-//   const z = positionAttribute.getZ(i);
-
-//   // If the position matches v1, update it to v2
-//   if (x === v1[0] && y === v1[1] && z === v1[2]) {
-//     positionAttribute.setXYZ(i, v2[0], v2[1], v2[2]);
-//     break;  // Exit the loop after updating the vertex
-//   }
-// }
-
-// // After updating the geometry, mark it as needing an update
-// positionAttribute.needsUpdate = true;
-
-// // Optionally, recompute the normals for lighting accuracy
-// geometry.computeVertexNormals();
-
-// // Optionally, if it's a dynamic mesh, you might want to call:
-// mesh.geometry = geometry;  // Re-apply the updated geometry
-
-// // Now the geometry will reflect the updated vertex.
