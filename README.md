@@ -12,15 +12,9 @@ git clone https://github.com/SoulNikhar/ThreeJsPractice-
 ### 2. Install Project Dependencies
 Install the required dependencies using npm::
 ```bash
-npm install
-```
-### 3. Additional Project Dependencies
-some more are :
-```bash
-npm install three gsap lil-gui
-```
+npm i
 
-### 4. Run the Development Server
+### 3. Run the Development Server
 Start the Vite development server:
 
 ```bash
