@@ -15,11 +15,10 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 
-const origin = new THREE.Vector2(0, 0);
+const origin = new THREE.Vector2(1, 1);
 // console.log(origin.x, origin.y);
 
-const height = 2,
-  width = 2;
+const height = 2, width = 2;
 const shape = new THREE.Shape();
 shape.moveTo(origin.x, origin.y);
 shape.lineTo(origin.x + width, origin.y);
@@ -91,7 +90,7 @@ let actualMaxAngle = Math.atan(
 );
 // console.log(actualMaxAngle * (180 / Math.PI));
 
-var angleDegrees = 28;
+var angleDegrees = 10;
 if (angleDegrees > actualMaxAngle * (180 / Math.PI)) {
   angleDegrees = actualMaxAngle * (180 / Math.PI);
 }
@@ -99,30 +98,73 @@ if (angleDegrees > actualMaxAngle * (180 / Math.PI)) {
 const angleRadians = angleDegrees * (Math.PI / 180);
 const distToMove = distBetweenPointsBase * Math.tan(angleRadians);
 
-const verticesAtZero = uniqueVertices.filter((v) => v[0] === 0);
-const verticesAtExtrudeLength = uniqueVertices.filter(
-  (v) => v[0] === extrudeLength
-);
+// const verticesAtZero = uniqueVertices.filter((v) => v[0] === 0);
+// const verticesAtExtrudeLength = uniqueVertices.filter(
+//   (v) => v[0] === extrudeLength
+// );
+// console.log(verticesAtZero, verticesAtExtrudeLength);
 
-console.log(verticesAtZero, verticesAtExtrudeLength);
+const verticesAtExtreme = uniqueVertices.filter((v) =>  v[0] == 0 || v[0] == extrudeLength )
+console.log(verticesAtExtreme);
 
-const verticesToUpdate1 = verticesAtZero
-  .filter(([x, y, z]) => !(x === 0 && y === 0 && (z === -2 || z === 0)))
-  .map((v) => ({
-    old: v,
-    new: [v[0] + distToMove * (v[1] / 2), v[1], v[2]],
-  }));
+// const verticesToUpdate1 = verticesAtZero
+//   .filter(([x, y, z]) => !(x === 0 && y === 0 ))
+//   .map((v) => ({
+//     old: v,
+//     new: [v[0] + distToMove * (v[1] / 2), v[1], v[2]],
+//   }));
 
-const verticesToUpdate2 = verticesAtExtrudeLength
-  .filter(([x, y, z]) => !(x === extrudeLength && y === 0 && (z === -2 || z === 0)))
-  .map((v) => ({
-    old: v,
-    new: [v[0] - distToMove * (v[1] / 2), v[1], v[2]],
-  }));
+// const verticesToUpdate2 = verticesAtExtrudeLength
+//   .filter(([x, y, z]) => !(x === extrudeLength && y === 0 ))
+//   .map((v) => ({
+//     old: v,
+//     new: [v[0] - distToMove * (v[1] / 2), v[1], v[2]],
+//   }));
+// console.log(verticesToUpdate1 , verticesToUpdate2);
 
-console.log(verticesToUpdate1 , verticesToUpdate2);
 
-verticesToUpdate1.forEach(({ old: oldVertex, new: newVertex }) => {
+  const verticesToUpdate = verticesAtExtreme
+  .filter(([x, y, z]) => !(x === 0 && y === 0) || !(x === extrudeLength && y === 0))
+  .map((v) => {
+    const [x, y, z] = v;
+    let newVertex = v;
+
+    if (x === 0) {
+      newVertex = [x + distToMove * (y / 2), y, z];
+    } else if (x === extrudeLength) {
+      newVertex = [x - distToMove * (y / 2), y, z];
+    }
+
+    return { old: v, new: newVertex };
+  });
+
+  console.log(verticesToUpdate);
+  
+
+// verticesToUpdate1.forEach(({ old: oldVertex, new: newVertex }) => {
+//   for (let i = 0; i < positionAttribute.count; i++) {
+//     const x = positionAttribute.getX(i);
+//     const y = positionAttribute.getY(i);
+//     const z = positionAttribute.getZ(i);
+
+//     if (x === oldVertex[0] && y === oldVertex[1] && z === oldVertex[2]) {
+//       positionAttribute.setXYZ(i, newVertex[0], newVertex[1], newVertex[2]);
+//     }
+//   }
+// });
+// verticesToUpdate2.forEach(({ old: oldVertex, new: newVertex }) => {
+//   for (let i = 0; i < positionAttribute.count; i++) {
+//     const x = positionAttribute.getX(i);
+//     const y = positionAttribute.getY(i);
+//     const z = positionAttribute.getZ(i);
+
+//     if (x === oldVertex[0] && y === oldVertex[1] && z === oldVertex[2]) {
+//       positionAttribute.setXYZ(i, newVertex[0], newVertex[1], newVertex[2]);
+//     }
+//   }
+// });
+
+verticesToUpdate.forEach(({ old: oldVertex, new: newVertex }) => {
   for (let i = 0; i < positionAttribute.count; i++) {
     const x = positionAttribute.getX(i);
     const y = positionAttribute.getY(i);
@@ -133,17 +175,15 @@ verticesToUpdate1.forEach(({ old: oldVertex, new: newVertex }) => {
     }
   }
 });
-verticesToUpdate2.forEach(({ old: oldVertex, new: newVertex }) => {
-  for (let i = 0; i < positionAttribute.count; i++) {
-    const x = positionAttribute.getX(i);
-    const y = positionAttribute.getY(i);
-    const z = positionAttribute.getZ(i);
 
-    if (x === oldVertex[0] && y === oldVertex[1] && z === oldVertex[2]) {
-      positionAttribute.setXYZ(i, newVertex[0], newVertex[1], newVertex[2]);
-    }
-  }
-});
+
+// const check = new THREE.SphereGeometry(0.1);
+// const mchgeck = new THREE.MeshBasicMaterial({color:'blue'})
+// const meshcheck = new THREE.Mesh(check , mchgeck);
+// meshcheck.position.set(10, 0, -2)
+// scene.add(meshcheck)
+
+
 positionAttribute.needsUpdate = true;
 geometry.computeVertexNormals();
 mesh.geometry = geometry;
