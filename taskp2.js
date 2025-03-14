@@ -1,25 +1,23 @@
-
+//#region imports
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { depth } from "three/tsl";
-
-
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
+var camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
     0.1,
     1000
 );
-camera.position.set(0, 0, 300);
+camera.position.set(0, 0, 800);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
-
 const origin = new THREE.Vector2(0, 0);
+//#endregion
 
+//#region  function - 1
 function fun1() {
     const height = 2,
         width = 2;
@@ -71,7 +69,9 @@ function fun1() {
 
     console.log(uniqueVertices);
 }
+//#endregion
 
+//#region  function - 2
 function fun2() {
     camera.position.set(0, 0, 200);
     const points = [];
@@ -150,7 +150,9 @@ function fun2() {
     hmesh.rotateY(-Math.PI / 2)
     scene.add(hmesh);
 }
+//#endregion
 
+//#region  function - 3
 function fun3() {
     const shape = new THREE.Shape();
     const vertices = [];
@@ -278,7 +280,9 @@ function fun3() {
     const edges = new THREE.LineSegments(edgeo, edmat);
     scene.add(edges);
 }
+//#endregion
 
+//#region  function - 4
 function fun4() {
     const axesHelper = new THREE.AxesHelper(10);
     scene.add(axesHelper);
@@ -306,7 +310,9 @@ function fun4() {
     scene.add(extrudeMesh);
 
 }
+//#endregion
 
+//#region  function - 5
 function fun5() {
 
     let helper = new THREE.GridHelper();
@@ -341,42 +347,33 @@ function fun5() {
     scene.add(o);
 
 }
+//#endregion
 
+//#region  function - 6
 function fun6() {
     const shape = new THREE.Shape();
-    const vertices = [];
     const origin = new THREE.Vector2(0, 0);
-    var height = 200, width = 60;
-    var radius = 6;
-    const extrudeLength = 10;
+    var height = 300, width = 100, radius = 5;
+    const extrudeLength = 1;
+
     shape.moveTo(origin.x, origin.y);
-    shape.lineTo(origin.x, origin.y);
-    shape.lineTo(origin.x, origin.y + height);  // s1 
-    shape.quadraticCurveTo(origin.x, origin.y +height + 6 , origin.x - width * 3.5 / 15 , origin.y + height + 4);
+    shape.lineTo(origin.x, origin.y + height);
+    shape.quadraticCurveTo(origin.x, origin.y + height + height / 12, origin.x - width * 3.5 / 15, origin.y + height + height / 23);
     shape.lineTo(origin.x - width, origin.y + height - height / 10);
     shape.lineTo(origin.x - width, origin.y + height - height / 10 - height / 5);
     shape.lineTo(origin.x - width * 2 / 5 - 6, origin.y + height + height / 10 - (1.35 * height / 4));
-    shape.quadraticCurveTo(origin.x - width * 2 / 5 - 2, origin.y + height + height / 10 - (1.35 * height / 4) , origin.x - width * 2 / 5, origin.y + height + height / 10 - (1.4 * height / 4));
+    shape.quadraticCurveTo(origin.x - width * 2 / 5 - 2, origin.y + height + height / 10 - (1.35 * height / 4), origin.x - width * 2 / 5, origin.y + height + height / 10 - (1.4 * height / 4));
     shape.lineTo(origin.x - width * 2 / 5, origin.y);
-    shape.quadraticCurveTo(origin.x - width / 5, origin.y - 5 , origin.x, origin.y);
+    shape.quadraticCurveTo(origin.x - width / 5, origin.y - width / 5, origin.x, origin.y);
 
     if (radius > height / 8 || radius < 0 || radius > width / 2.5) {
-        radius = Math.min(height / 8, width / 2.5 - 3);
+        radius = Math.min(height / 8, width / 2.5 - 3, height / 10);
     }
-    console.log(radius);
     width = Math.max(width, 20);
     const hole = new THREE.Path();
     hole.absarc(origin.x - width * 2 / 5 - 6, origin.y + height + height / 10 - (1.3 * height / 4) + height / 10, radius, 0, Math.PI * 2, true);
     shape.holes.push(hole);
     const extrudeSetting = {
-        steps: 90,
-        curveSegments: 92,
-        bevelEnabled: true,
-        depth: 90,
-        bevelThickness: 100,
-        bevelSize: 100,
-        bevelOffset: 100,
-        bevelSegments: 900,
         extrudePath: new THREE.CatmullRomCurve3([
             new THREE.Vector3(0, 0, 0),
             new THREE.Vector3(extrudeLength, 0, 0)
@@ -385,111 +382,17 @@ function fun6() {
     const geo = new THREE.ExtrudeGeometry(shape, extrudeSetting)
     const mat = new THREE.MeshBasicMaterial({ color: 'blue', wireframe: false })
     const mesh = new THREE.Mesh(geo, mat);
-    mesh.rotateY(-Math.PI / 2);
-    // mesh.rotateZ(-0.3);
+    mesh.rotateY(-Math.PI / 2)
     scene.add(mesh);
-
-    vertices.forEach((v) => {
-        const vertexGeo = new THREE.SphereGeometry(0.5, 16, 16);
-        const vertexMat = new THREE.MeshBasicMaterial({ color: 'red' });
-        const vertexMesh = new THREE.Mesh(vertexGeo, vertexMat);
-        vertexMesh.position.set(v.x, v.y, v.z);
-        scene.add(vertexMesh);
-    });
 
     const edgeo = new THREE.EdgesGeometry(geo);
     const edmat = new THREE.LineBasicMaterial({ color: 'white' });
     const edges = new THREE.LineSegments(edgeo, edmat);
     mesh.add(edges);
-
-
-    const vertexGeo = new THREE.SphereGeometry(2, 16, 16);
-    const vertexMat = new THREE.MeshBasicMaterial({ color: 'red' });
-    const vertexMesh = new THREE.Mesh(vertexGeo, vertexMat);
-    // vertexMesh.position.set(origin.x - width * 2 / 5, origin.y);  // v1
-    // scene.add(vertexMesh);
 }
+//#endregion
 
-function fun9() {
-    var camera, scene, renderer;
-    var curve;
-    var path;
-    var oHeight = 0;
-    var delta = 0;
-    var geometry;
-
-    init();
-    animate();
-    function init() {
-        camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
-        camera.position.z = 600;
-        scene = new THREE.Scene();
-
-        geometry = new THREE.BufferGeometry();
-        var material = new THREE.LineBasicMaterial({ color: 0xffffff });
-
-        curve = new THREE.Line(geometry, material);
-
-        scene.add(curve);
-
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        window.onresize = resize;
-    }
-
-    function animate() {
-        requestAnimationFrame(animate);
-
-        delta += .1;
-        oHeight = 4
-
-        path = new THREE.Path();
-        path.lineTo(0, 0);
-        path.quadraticCurveTo(0, 20, 20, 20);
-        path.lineTo(40, 20);
-        path.quadraticCurveTo(60, 20, 60, 0);
-        path.lineTo(60, -40 - oHeight);
-        // path.quadraticCurveTo(60, -60 - oHeight, 40, -60 - oHeight);
-        // path.lineTo(20, -60 - oHeight);
-        // path.quadraticCurveTo(0, -60 - oHeight, 0, -40 - oHeight);
-        // path.lineTo(0, 0);
-
-        const vertexGeo = new THREE.SphereGeometry(0.5, 16, 16);
-        const vertexMat = new THREE.MeshBasicMaterial({ color: 'red' });
-        const vertexMesh = new THREE.Mesh(vertexGeo, vertexMat);
-        vertexMesh.position.set(0,20);
-        scene.add(vertexMesh);
-
-        geometry.dispose();
-        geometry.setFromPoints(path.getPoints());
-
-        renderer.render(scene, camera);
-    }
-    function resize() {
-        var aspect = window.innerWidth / window.innerHeight;
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        camera.aspect = aspect;
-        camera.updateProjectionMatrix();
-    }
-}
-
-window.addEventListener("resize", () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-}
-animate();
-
-
-
+//#region  function - 7
 function fun7() {
     const shape = new THREE.Shape();
     const vertices = [];
@@ -499,13 +402,14 @@ function fun7() {
     const origin = new THREE.Vector2(0, 0);
     const height = 100, width = 50;
     var radius = 10;
-    const extrudeLength = 30;
+    const extrudeLength = 1;
     shape.moveTo(origin.x, origin.y);
 
-    shape.bezierCurveTo(origin.x, origin.y, origin.x, origin.y + height, origin.x - width / 5, origin.y + height + 3);
-    shape.bezierCurveTo(origin.x - width / 5, origin.y + height + 3, origin.x - width * 2 / 5, origin.y + height + 3, origin.x - width, origin.y + height - height / 10);
-    shape.bezierCurveTo(origin.x - width, origin.y + height - height / 10, origin.x - width, origin.y + height - height / 10 - height / 4, origin.x - width * 2 / 5, origin.y + height + height / 10 - height / 4);
-    shape.bezierCurveTo(origin.x - width * 2 / 5, origin.y + height + height / 10 - height / 4, origin.x - width * 2 / 5, origin.y, origin.x, origin.y);
+    shape.bezierCurveTo(origin.x, origin.y, origin.x, origin.y + height / 2, origin.x, origin.y + height);
+    // shape.bezierCurveTo(origin.x, origin.y, origin.x, origin.y + height, origin.x - width / 5, origin.y + height + 3);
+    // shape.bezierCurveTo(origin.x - width / 5, origin.y + height + 3, origin.x - width * 2 / 5, origin.y + height + 3, origin.x - width, origin.y + height - height / 10);
+    // shape.bezierCurveTo(origin.x - width, origin.y + height - height / 10, origin.x - width, origin.y + height - height / 10 - height / 4, origin.x - width * 2 / 5, origin.y + height + height / 10 - height / 4);
+    // shape.bezierCurveTo(origin.x - width * 2 / 5, origin.y + height + height / 10 - height / 4, origin.x - width * 2 / 5, origin.y, origin.x, origin.y);
 
     // shape.lineTo(origin.x, origin.y);
     // shape.lineTo(origin.x, origin.y + height);
@@ -542,7 +446,6 @@ function fun7() {
         ])
     }
 
-
     const geo = new THREE.ExtrudeGeometry(shape, extrudeSetting)
     const mat = new THREE.MeshBasicMaterial({ color: 'blue' })
     const mesh = new THREE.Mesh(geo, mat);
@@ -563,14 +466,13 @@ function fun7() {
         vertexMesh.position.set(v.x, v.y, v.z);
         scene.add(vertexMesh);
     });
-
-
-
     //         hole.absarc(x, y, radius, 0, Math.PI * 2);
     //         shape.holes.push(hole);
 
 }
+//#endregion
 
+//#region  function - 8
 function fun8() {
 
     const shape = new THREE.Shape();
@@ -625,15 +527,123 @@ function fun8() {
 
 }
 
+//#endregion
 
-// fun1();
-// fun2();
-// fun3();
-// fun4();
-// fun5();
+//#region  function - 9
+function fun9() {
+    var camera, scene, renderer;
+    var curve;
+    var path;
+    var oHeight = 0;
+    var delta = 0;
+    var geometry;
+
+    init();
+    animate();
+    function init() {
+        camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 1000);
+        camera.position.z = 600;
+        scene = new THREE.Scene();
+
+        geometry = new THREE.BufferGeometry();
+        var material = new THREE.LineBasicMaterial({ color: 0xffffff });
+
+        curve = new THREE.Line(geometry, material);
+
+        scene.add(curve);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        window.onresize = resize;
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        delta += .1;
+        oHeight = 4
+
+        path = new THREE.Path();
+        path.lineTo(0, 0);
+        path.quadraticCurveTo(0, 20, 20, 20);
+        path.lineTo(40, 20);
+        path.quadraticCurveTo(60, 20, 60, 0);
+        path.lineTo(60, -40 - oHeight);
+        // path.quadraticCurveTo(60, -60 - oHeight, 40, -60 - oHeight);
+        // path.lineTo(20, -60 - oHeight);
+        // path.quadraticCurveTo(0, -60 - oHeight, 0, -40 - oHeight);
+        // path.lineTo(0, 0);
+
+        const vertexGeo = new THREE.SphereGeometry(0.5, 16, 16);
+        const vertexMat = new THREE.MeshBasicMaterial({ color: 'red' });
+        const vertexMesh = new THREE.Mesh(vertexGeo, vertexMat);
+        vertexMesh.position.set(0, 20);
+        scene.add(vertexMesh);
+
+        geometry.dispose();
+        geometry.setFromPoints(path.getPoints());
+
+        renderer.render(scene, camera);
+    }
+    function resize() {
+        var aspect = window.innerWidth / window.innerHeight;
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = aspect;
+        camera.updateProjectionMatrix();
+    }
+}
+//#endregion
+
+//#region helper
 fun6();
-// fun7();
-// fun8();
-// fun9();
+document.addEventListener('keyup', (event) => {
+    const key = event.key; 
+    console.log(key);
+       
+    switch (key) {
+        case '1':
+            fun1();
+            break;
+        case '2':
+            fun2();
+            break;
+        case '3':
+            fun3();
+            break;
+        case '4':
+            fun4();
+            break;
+        case '5':
+            fun5();
+            break;
+        case '6':
+            fun6();
+            break;
+       case '7':
+            fun8();
+            break;
+        case '9':
+            fun9();
+            break;
+        default:
+            console.log("No function selected");
+    }
+});
+//#endregion
 
+//#region render
+window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+}
+animate();
+//#endregion
