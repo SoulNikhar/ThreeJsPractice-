@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 const scene = new THREE.Scene();
+scene.name = 'scene_myworld';
 var camera = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
@@ -425,7 +426,7 @@ function fun7() {
 
     // const geo  = new THREE.ShapeGeometry(shape);
     const geo = new THREE.ExtrudeGeometry(shape, extrudeSetting)
-    const mat = new THREE.MeshBasicMaterial({ color: 'blue' })
+    const mat = new THREE.MeshBasicMaterial({ color: 'blue', wireframe: true })
     const mesh = new THREE.Mesh(geo, mat);
     // mesh.rotateY( - Math.PI / 2)
     scene.add(mesh);
@@ -725,8 +726,8 @@ function fun12() {
     if (handleHeight > doorHeight) {
         handleHeight = doorHeight;
     }
-    if (doorWidth < holeDiameter + 20 ) {
-        doorWidth = holeDiameter 
+    if (doorWidth < holeDiameter + 20) {
+        doorWidth = holeDiameter
     }
 
     // holeDiameter calculation
@@ -742,19 +743,19 @@ function fun12() {
     doorShape.lineTo(origin.x, origin.y + doorHeight);
     doorShape.lineTo(origin.x, origin.y)
 
-    
+
 
     let x_handleMove = 0, y_handleMove = 148;
 
     //  Handle
     let handle = new THREE.Shape();
     // y_handleMove -= (doorHeight - handleHeight) / 2;
-    handle.moveTo( origin.x, origin.y + doorHeight - (doorHeight - handleHeight) / 2);
-    handle.lineTo(origin.x + holeDiameter + 20,  origin.y + doorHeight - (doorHeight - handleHeight) / 2)
-    handle.lineTo( origin.x + holeDiameter + 20,  origin.y + (doorHeight - handleHeight) / 2)
-    handle.lineTo( origin.x - handleWidth,  origin.y + (doorHeight - handleHeight) / 2)
-    handle.lineTo( origin.x - handleWidth,  origin.y + handleHeight + (doorHeight - handleHeight) / 2)
-    handle.lineTo( origin.x,  origin.y + handleHeight + (doorHeight - handleHeight) / 2)
+    handle.moveTo(origin.x, origin.y + doorHeight - (doorHeight - handleHeight) / 2);
+    handle.lineTo(origin.x + holeDiameter + 20, origin.y + doorHeight - (doorHeight - handleHeight) / 2)
+    handle.lineTo(origin.x + holeDiameter + 20, origin.y + (doorHeight - handleHeight) / 2)
+    handle.lineTo(origin.x - handleWidth, origin.y + (doorHeight - handleHeight) / 2)
+    handle.lineTo(origin.x - handleWidth, origin.y + handleHeight + (doorHeight - handleHeight) / 2)
+    handle.lineTo(origin.x, origin.y + handleHeight + (doorHeight - handleHeight) / 2)
 
     //  Door Hole
     const doorHole = new THREE.Path();
@@ -764,7 +765,7 @@ function fun12() {
 
     // Handle Hole
     const HandleHole = new THREE.Path();
-    HandleHole.absarc( origin.x + 10 + holeDiameter / 2,  origin.y + handleHeight + (doorHeight - handleHeight) / 2 - handleHeight / 2, holeDiameter / 2, 0, Math.PI * 2, true);
+    HandleHole.absarc(origin.x + 10 + holeDiameter / 2, origin.y + handleHeight + (doorHeight - handleHeight) / 2 - handleHeight / 2, holeDiameter / 2, 0, Math.PI * 2, true);
     handle.holes.push(HandleHole);
 
 
@@ -833,12 +834,12 @@ function fun13() {
     //  Handle
     let handle = new THREE.Shape();
     const originHandle = new THREE.Vector2(0, 0);
-    handle.moveTo( originHandle.x,  originHandle.y + doorHeight - (doorHeight - handleHeight) / 2);
-    handle.lineTo( originHandle.x + holeDiameter + 20,  originHandle.y + doorHeight - (doorHeight - handleHeight) / 2)
-    handle.lineTo( originHandle.x + holeDiameter + 20,  originHandle.y + (doorHeight - handleHeight) / 2)
-    handle.lineTo( originHandle.x - handleWidth,  originHandle.y + (doorHeight - handleHeight) / 2)
-    handle.lineTo( originHandle.x - handleWidth,  originHandle.y + handleHeight + (doorHeight - handleHeight) / 2)
-    handle.lineTo( originHandle.x,  originHandle.y + handleHeight + (doorHeight - handleHeight) / 2)
+    handle.moveTo(originHandle.x, originHandle.y + doorHeight - (doorHeight - handleHeight) / 2);
+    handle.lineTo(originHandle.x + holeDiameter + 20, originHandle.y + doorHeight - (doorHeight - handleHeight) / 2)
+    handle.lineTo(originHandle.x + holeDiameter + 20, originHandle.y + (doorHeight - handleHeight) / 2)
+    handle.lineTo(originHandle.x - handleWidth, originHandle.y + (doorHeight - handleHeight) / 2)
+    handle.lineTo(originHandle.x - handleWidth, originHandle.y + handleHeight + (doorHeight - handleHeight) / 2)
+    handle.lineTo(originHandle.x, originHandle.y + handleHeight + (doorHeight - handleHeight) / 2)
 
     //  Door Hole
     const doorHole = new THREE.Path();
@@ -848,7 +849,7 @@ function fun13() {
 
     // Handle Hole
     const HandleHole = new THREE.Path();
-    HandleHole.absarc( originHandle.x + 10 + holeDiameter / 2,  originHandle.y + handleHeight + (doorHeight - handleHeight) / 2 - handleHeight / 2, holeDiameter / 2, 0, Math.PI * 2, true);
+    HandleHole.absarc(originHandle.x + 10 + holeDiameter / 2, originHandle.y + handleHeight + (doorHeight - handleHeight) / 2 - handleHeight / 2, holeDiameter / 2, 0, Math.PI * 2, true);
     handle.holes.push(HandleHole);
 
     const shapeDeep = 40;
@@ -887,10 +888,27 @@ function fun13() {
 }
 //#endregion
 
-//#region  function - 14
+//#region Function 14 (Independent)
 function fun14() {
     const origin = new THREE.Vector2(0, 0);
-    let doorHeight = 400, doorWidth = 500, holeDiameter = 100, handleHeight = 90, handleWidth = 150;
+    let doorHeight = 200, doorWidth = 300, holeDiameter = 50, handleHeight = 50, handleWidth = 100;
+
+    // Handle height calculation
+    if (handleHeight < 20) {
+        handleHeight = 20;
+    }
+    if (handleHeight > doorHeight) {
+        handleHeight = doorHeight;
+    }
+    if (holeDiameter + 20 > handleHeight) {
+        holeDiameter = handleHeight - 20;
+    }
+    doorHeight = Math.max(doorHeight, 2 * holeDiameter + 40)
+    // Extrusion 
+    const shapeDeep = 1;
+    const extrudeSetting = {
+        depth: shapeDeep,
+    };
 
     // Door formation
     const doorShape = new THREE.Shape();
@@ -900,6 +918,109 @@ function fun14() {
     doorShape.lineTo(origin.x, origin.y + doorHeight);
     doorShape.lineTo(origin.x, origin.y);
 
+
+    const doorHoles = [
+        { x: origin.x + holeDiameter / 2 + 5, y: origin.y + doorHeight / 2 },
+        { x: origin.x - holeDiameter / 2 - 5 + doorWidth, y: origin.y + doorHeight / 2 },
+        { x: origin.x + doorWidth / 2, y: origin.y + holeDiameter - 10 },
+        { x: origin.x + doorWidth / 2, y: origin.y + doorHeight - holeDiameter + 10 },
+    ];
+    doorHoles.forEach(hole => {
+        const doorHole = new THREE.Path();
+        doorHole.absarc(hole.x, hole.y, holeDiameter / 2, 0, Math.PI * 2, true);
+        doorShape.holes.push(doorHole);
+    });
+
+
+
+    // Door Extrusion
+    const door = new THREE.ExtrudeGeometry(doorShape, extrudeSetting);
+    const doormat = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: false });
+    const doorMesh = new THREE.Mesh(door, doormat);
+    scene.add(doorMesh);
+
+    // handle Formaton 
+    const originHandle = new THREE.Vector2(0, 0);
+    let handle = new THREE.Shape();
+    handle.moveTo(originHandle.x, originHandle.y);
+    handle.lineTo(originHandle.x + handleHeight / 2, originHandle.y);
+    handle.lineTo(originHandle.x + handleHeight / 2, originHandle.y + handleWidth);
+    handle.lineTo(originHandle.x - handleHeight / 2, originHandle.y + handleWidth);
+    handle.lineTo(originHandle.x - handleHeight / 2, originHandle.y);
+
+    // Handle Hole 
+    const HandleHole = new THREE.Path();
+    HandleHole.absarc(originHandle.x, originHandle.y + holeDiameter / 2 + 5, holeDiameter / 2, 0, Math.PI * 2, true);
+    handle.holes.push(HandleHole);
+
+
+    //  Handle UP
+    const handles = new THREE.ExtrudeGeometry(handle, extrudeSetting);
+    const handleMesh = new THREE.MeshBasicMaterial({ color: 0x00ff00ff, wireframe: false, side: THREE.DoubleSide });
+    const handlesrMesh = new THREE.Mesh(handles, handleMesh);
+    handlesrMesh.position.set(originHandle.x + doorWidth / 2, originHandle.y + doorHeight - holeDiameter - 10, shapeDeep);
+    scene.add(handlesrMesh);
+
+    //  Handle DOWN
+    const handleDown = handles.clone();
+    const handleDownMat = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false, side: THREE.DoubleSide });
+    const handleDownMatMesh = new THREE.Mesh(handleDown, handleDownMat);
+    handleDownMatMesh.position.set(originHandle.x + doorWidth / 2, originHandle.y + holeDiameter + 10, shapeDeep * 2);
+    handleDown.rotateX(Math.PI)
+    scene.add(handleDownMatMesh);
+
+    // Handle RIGHT
+    const handleRight = handles.clone();
+    const handleRightMat = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false, side: THREE.DoubleSide });
+    const handleRightMatMesh = new THREE.Mesh(handleRight, handleRightMat);
+    handleRightMatMesh.position.set(originHandle.x + doorWidth - holeDiameter - 10, originHandle.y + doorHeight / 2, shapeDeep);
+    handleRightMatMesh.rotateZ(-Math.PI / 2);
+    scene.add(handleRightMatMesh);
+
+    // Handle LEFT  
+    const handleLeft = handles.clone();
+    const handleLeftMat = new THREE.MeshBasicMaterial({ color: 0xf00f0ff, wireframe: false, side: THREE.DoubleSide });
+    const handleLeftMatMesh = new THREE.Mesh(handleLeft, handleLeftMat);
+    handleLeftMatMesh.position.set(originHandle.x + holeDiameter + 10, originHandle.y + doorHeight / 2, shapeDeep);
+    handleLeftMatMesh.rotateZ(Math.PI / 2);
+    scene.add(handleLeftMatMesh);
+
+    // Edge line for handle geometry
+    const handleEdmat = new THREE.LineBasicMaterial({ color: 'white' });
+
+
+    const handleEdgeo = new THREE.EdgesGeometry(handles);
+    const handleEdges = new THREE.LineSegments(handleEdgeo, handleEdmat);
+    handlesrMesh.add(handleEdges);
+
+    // Edge line Handle Left
+    const handleLeftEdge = new THREE.EdgesGeometry(handleLeft);
+    const handleLeftEdgeSeg = new THREE.LineSegments(handleLeftEdge, handleEdmat);
+    handleLeftMatMesh.add(handleLeftEdgeSeg);
+
+    // // Edge line for clone2 handle geometry
+    const handleRightEdge = new THREE.EdgesGeometry(handleRight);
+    const handleRightEdgeSeg = new THREE.LineSegments(handleRightEdge, handleEdmat);
+    handleRightMatMesh.add(handleRightEdgeSeg);
+
+    // // Edge line for clone3 handle geometry
+    const handleDownEdge = new THREE.EdgesGeometry(handleDown);
+    const handleDownEdgeSeg = new THREE.LineSegments(handleDownEdge, handleEdmat);
+    handleDownMatMesh.add(handleDownEdgeSeg);
+
+    const ch = new THREE.SphereGeometry(2)
+    const chmat = new THREE.MeshBasicMaterial({ color: 'red', wireframe: false })
+    const chmesh = new THREE.Mesh(ch, chmat);
+    chmesh.position.set(originHandle.x, originHandle.y);
+    // scene.add(chmesh)
+}
+//#endregion
+
+//#region Function 15 (dependent)
+function fun15() {
+    const origin = new THREE.Vector2(0, 0);
+    let doorHeight = 200, doorWidth = 300, holeDiameter = 50, handleHeight = 50, handleWidth = 100;
+
     // Handle height calculation
     if (handleHeight < 20) {
         handleHeight = 20;
@@ -907,90 +1028,202 @@ function fun14() {
     if (handleHeight > doorHeight) {
         handleHeight = doorHeight;
     }
-
-    // Hole diameter calculation
     if (holeDiameter + 20 > handleHeight) {
         holeDiameter = handleHeight - 20;
     }
+    doorHeight = Math.max(doorHeight, 2 * holeDiameter + 40)
+    // Extrusion 
+    const shapeDeep = 1;
+    const extrudeSetting = {
+        depth: shapeDeep,
+    };
 
-    let x_handleMove = 0, y_handleMove = 0;
+    // Door formation
+    const doorShape = new THREE.Shape();
+    doorShape.moveTo(origin.x, origin.y);
+    doorShape.lineTo(origin.x + doorWidth, origin.y);
+    doorShape.lineTo(origin.x + doorWidth, origin.y + doorHeight);
+    doorShape.lineTo(origin.x, origin.y + doorHeight);
+    doorShape.lineTo(origin.x, origin.y);
+    console.log("this for door ", origin.y);
 
-    // Handle
-    let handle = new THREE.Shape();
-    handle.moveTo(x_handleMove + origin.x, y_handleMove + origin.y + doorHeight - (doorHeight - handleHeight) / 2);
-    handle.lineTo(x_handleMove + origin.x + holeDiameter + 20, y_handleMove + origin.y + doorHeight - (doorHeight - handleHeight) / 2);
-    handle.lineTo(x_handleMove + origin.x + holeDiameter + 20, y_handleMove + origin.y + (doorHeight - handleHeight) / 2);
-    handle.lineTo(x_handleMove + origin.x - handleWidth, y_handleMove + origin.y + (doorHeight - handleHeight) / 2);
-    handle.lineTo(x_handleMove + origin.x - handleWidth, y_handleMove + origin.y + handleHeight + (doorHeight - handleHeight) / 2);
-    handle.lineTo(x_handleMove + origin.x, y_handleMove + origin.y + handleHeight + (doorHeight - handleHeight) / 2);
 
-    // Door holes
     const doorHoles = [
-        { x: origin.x + 10 + holeDiameter / 2, y: origin.y + doorHeight / 2 },
-        { x: origin.x + doorWidth / 2 + 5, y: origin.y + holeDiameter / 2 + 5 },
-        { x: origin.x + doorWidth - holeDiameter / 2, y: origin.y + doorHeight / 2 },
-        { x: origin.x + doorWidth / 2 + 5, y: origin.y - holeDiameter / 2 + doorHeight - 10 }
+        { x: origin.x + holeDiameter / 2 + 5, y: origin.y + doorHeight / 2 },
+        { x: origin.x - holeDiameter / 2 - 5 + doorWidth, y: origin.y + doorHeight / 2 },
+        { x: origin.x + doorWidth / 2, y: origin.y + holeDiameter - 10 },
+        { x: origin.x + doorWidth / 2, y: origin.y + doorHeight - holeDiameter + 10 },
     ];
-
     doorHoles.forEach(hole => {
         const doorHole = new THREE.Path();
         doorHole.absarc(hole.x, hole.y, holeDiameter / 2, 0, Math.PI * 2, true);
         doorShape.holes.push(doorHole);
     });
 
-    // Handle hole
-    const HandleHole = new THREE.Path();
-    HandleHole.absarc(x_handleMove + origin.x + 10 + holeDiameter / 2, y_handleMove + origin.y + handleHeight + (doorHeight - handleHeight) / 2 - handleHeight / 2, holeDiameter / 2, 0, Math.PI * 2, true);
-    handle.holes.push(HandleHole);
 
-    const shapeDeep = 40;
-    // Extrude setting
-    const extrudeSetting = {
-        depth: shapeDeep,
-    };
 
-    // Extrude for door
+    // Door Extrusion
     const door = new THREE.ExtrudeGeometry(doorShape, extrudeSetting);
     const doormat = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: false });
     const doorMesh = new THREE.Mesh(door, doormat);
     scene.add(doorMesh);
 
-    // Extrude handle
+    // handle Formaton 
+    let handle = new THREE.Shape();
+    // handle.moveTo(origin.x, origin.y);
+
+    console.log("this for handle ", origin.y);
+    handle.lineTo(handleHeight / 2, 0);
+    handle.lineTo(handleHeight / 2, handleWidth);
+    handle.lineTo(-handleHeight / 2, handleWidth);
+    handle.lineTo(- handleHeight / 2, 0);
+
+    // Handle Hole 
+    const HandleHole = new THREE.Path();
+    HandleHole.absarc(0, 0 + holeDiameter / 2 + 5, holeDiameter / 2, 0, Math.PI * 2, true);
+    handle.holes.push(HandleHole);
+
+
+    //  Handle UP
     const handles = new THREE.ExtrudeGeometry(handle, extrudeSetting);
-    const handleMesh = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: false, side: THREE.DoubleSide });
+    const handleMesh = new THREE.MeshBasicMaterial({ color: 0x00ff00ff, wireframe: false, side: THREE.DoubleSide });
     const handlesrMesh = new THREE.Mesh(handles, handleMesh);
-    handlesrMesh.position.set(0, 0, shapeDeep);
+    handlesrMesh.position.set(origin.x + doorWidth / 2, origin.y + doorHeight - holeDiameter - 10, shapeDeep);
     scene.add(handlesrMesh);
 
-    // const handleUp = handles.clone();
-    // const handleUpMat = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false, side: THREE.DoubleSide });
-    // const handleUpMesh = new THREE.Mesh(handleUp, handleUpMat);
-    // handleUpMesh.position.set(0, 0, shapeDeep + 100);
-    // scene.add(handleUpMesh);
-
-    const handleUp = handles.clone();
-    const clone1HandlesrMesh = new THREE.Mesh(handleUp, handleMesh);
-    clone1HandlesrMesh.position.set(holeDiameter - 5, doorHeight, shapeDeep);
-    clone1HandlesrMesh.rotateZ(-Math.PI / 2);
-    scene.add(clone1HandlesrMesh);
-
-    const handleRight = handles.clone();
-    const clone2HandlesrMesh = new THREE.Mesh(handleRight, handleMesh);
-    clone2HandlesrMesh.position.set(doorWidth, 0, shapeDeep * 2);
-    clone2HandlesrMesh.rotateY(-Math.PI);
-    scene.add(clone2HandlesrMesh);
-
+    //  Handle DOWN
     const handleDown = handles.clone();
-    const clone3HandlesrMesh = new THREE.Mesh(handleDown, handleMesh);
-    clone3HandlesrMesh.position.set(origin.x + doorWidth - handleHeight / 2, origin.y, shapeDeep);
-    clone3HandlesrMesh.rotateZ(Math.PI / 2);
-    scene.add(clone3HandlesrMesh);
+    const handleDownMat = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false, side: THREE.DoubleSide });
+    const handleDownMatMesh = new THREE.Mesh(handleDown, handleDownMat);
+    handleDownMatMesh.position.set(origin.x + doorWidth / 2, origin.y + holeDiameter + 10, shapeDeep * 2);
+    handleDown.rotateX(Math.PI)
+    scene.add(handleDownMatMesh);
 
-    // Edge line for door geometry
-    const doorEdgeo = new THREE.EdgesGeometry(door);
-    const doorEdmat = new THREE.LineBasicMaterial({ color: 'white' });
-    const doorEdges = new THREE.LineSegments(doorEdgeo, doorEdmat);
-    doorMesh.add(doorEdges);
+    // Handle RIGHT
+    const handleRight = handles.clone();
+    const handleRightMat = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false, side: THREE.DoubleSide });
+    const handleRightMatMesh = new THREE.Mesh(handleRight, handleRightMat);
+    handleRightMatMesh.position.set(origin.x + doorWidth - holeDiameter - 10, origin.y + doorHeight / 2, shapeDeep);
+    handleRightMatMesh.rotateZ(-Math.PI / 2);
+    scene.add(handleRightMatMesh);
+
+    // Handle LEFT  
+    const handleLeft = handles.clone();
+    const handleLeftMat = new THREE.MeshBasicMaterial({ color: 0xf00f0ff, wireframe: false, side: THREE.DoubleSide });
+    const handleLeftMatMesh = new THREE.Mesh(handleLeft, handleLeftMat);
+    handleLeftMatMesh.position.set(origin.x + holeDiameter + 10, origin.y + doorHeight / 2, shapeDeep);
+    handleLeftMatMesh.rotateZ(Math.PI / 2);
+    scene.add(handleLeftMatMesh);
+
+    // Edge line for handle geometry
+    const handleEdmat = new THREE.LineBasicMaterial({ color: 'white' });
+
+
+    const handleEdgeo = new THREE.EdgesGeometry(handles);
+    const handleEdges = new THREE.LineSegments(handleEdgeo, handleEdmat);
+    handlesrMesh.add(handleEdges);
+
+    // Edge line Handle Left
+    const handleLeftEdge = new THREE.EdgesGeometry(handleLeft);
+    const handleLeftEdgeSeg = new THREE.LineSegments(handleLeftEdge, handleEdmat);
+    handleLeftMatMesh.add(handleLeftEdgeSeg);
+
+    // // Edge line for clone2 handle geometry
+    const handleRightEdge = new THREE.EdgesGeometry(handleRight);
+    const handleRightEdgeSeg = new THREE.LineSegments(handleRightEdge, handleEdmat);
+    handleRightMatMesh.add(handleRightEdgeSeg);
+
+    // // Edge line for clone3 handle geometry
+    const handleDownEdge = new THREE.EdgesGeometry(handleDown);
+    const handleDownEdgeSeg = new THREE.LineSegments(handleDownEdge, handleEdmat);
+    handleDownMatMesh.add(handleDownEdgeSeg);
+
+    const ch = new THREE.SphereGeometry(2)
+    const chmat = new THREE.MeshBasicMaterial({ color: 'red', wireframe: false })
+    const chmesh = new THREE.Mesh(ch, chmat);
+    chmesh.position.set(origin.x, origin.y);
+    scene.add(chmesh)
+}
+//#endregion
+
+//#region Function 16 (diagonal)
+function fun16() {
+    const origin = new THREE.Vector2(0, 0);
+    let doorHeight = 200, doorWidth = 300, holeDiameter = 50, handleHeight = 50, handleWidth = 100;
+
+    // Handle height calculation
+    if (handleHeight < 20) {
+        handleHeight = 20;
+    }
+    if (handleHeight > doorHeight) {
+        handleHeight = doorHeight;
+    }
+    if (holeDiameter + 20 > handleHeight) {
+        holeDiameter = handleHeight - 20;
+    }
+    doorHeight = Math.max(doorHeight, 2 * holeDiameter + 40)
+    // Extrusion 
+    const shapeDeep = 10;
+    const extrudeSetting = {
+        depth: shapeDeep,
+    };
+
+    // Door formation
+    const doorShape = new THREE.Shape();
+    doorShape.moveTo(origin.x + 10, origin.y);
+    doorShape.lineTo(origin.x + doorWidth - 10, origin.y);
+    doorShape.quadraticCurveTo(origin.x + doorWidth, origin.y, origin.x + doorWidth, origin.y + 10)
+    doorShape.lineTo(origin.x + doorWidth, origin.y + doorHeight - 10);
+    doorShape.quadraticCurveTo(origin.x + doorWidth, origin.y + doorHeight, origin.x + doorWidth - 10, origin.y + doorHeight)
+    doorShape.lineTo(origin.x + 10, origin.y + doorHeight);
+    doorShape.quadraticCurveTo(origin.x, origin.y + doorHeight, origin.x, origin.y + doorHeight - 10)
+    doorShape.lineTo(origin.x, origin.y + 10);
+    doorShape.quadraticCurveTo(origin.x, origin.y, origin.x + 10, origin.y)
+
+
+    const doorHoles = [
+        { x: origin.x + holeDiameter, y: origin.y + doorHeight - holeDiameter },
+    ];
+    doorHoles.forEach(hole => {
+        const doorHole = new THREE.Path();
+        doorHole.absarc(hole.x, hole.y, holeDiameter / 2, 0, Math.PI * 2, true);
+        doorShape.holes.push(doorHole);
+    });
+
+
+
+    // Door Extrusion
+    const door = new THREE.ExtrudeGeometry(doorShape, extrudeSetting);
+    const doormat = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: false });
+    const doorMesh = new THREE.Mesh(door, doormat);
+    scene.add(doorMesh);
+
+    // handle Formaton 
+    let handle = new THREE.Shape();
+    // handle.moveTo(origin.x , origin.y)
+    handle.lineTo(handleHeight / 2 - 5, 0);
+    handle.quadraticCurveTo(handleHeight / 2, 0, handleHeight / 2, 5)
+    handle.lineTo(handleHeight / 2, handleWidth - 5);
+    handle.quadraticCurveTo(handleHeight / 2, handleWidth, handleHeight / 2 - 5, handleWidth)
+    handle.lineTo(-handleHeight / 2 + 5, handleWidth);
+    handle.quadraticCurveTo(-handleHeight / 2, handleWidth, -handleHeight / 2, handleWidth - 5)
+    handle.lineTo(- handleHeight / 2, 5);
+    handle.quadraticCurveTo(- handleHeight / 2, 0, - handleHeight / 2 + 5, 0)
+
+    // Handle Hole 
+    const HandleHole = new THREE.Path();
+    // HandleHole.absarc(0, 0 + holeDiameter / 2, holeDiameter / 2, 0, Math.PI * 2, true);
+    HandleHole.absarc(0, holeDiameter / 2 + 5, holeDiameter / 2, 0, Math.PI * 2, true);
+    handle.holes.push(HandleHole);
+
+
+    //  Diagonal Handle
+    const handles = new THREE.ExtrudeGeometry(handle, { depth: 20 });
+    const handleMesh = new THREE.MeshBasicMaterial({ color: 0x00ff00ff, wireframe: false, side: THREE.DoubleSide });
+    const handlesrMesh = new THREE.Mesh(handles, handleMesh);
+    handlesrMesh.position.set(origin.x + holeDiameter + 14, origin.y + doorHeight - holeDiameter - 14, shapeDeep);
+    handlesrMesh.rotateZ(Math.PI / 4)
+    scene.add(handlesrMesh);
 
     // Edge line for handle geometry
     const handleEdgeo = new THREE.EdgesGeometry(handles);
@@ -998,28 +1231,85 @@ function fun14() {
     const handleEdges = new THREE.LineSegments(handleEdgeo, handleEdmat);
     handlesrMesh.add(handleEdges);
 
-    // Edge line for clone1 handle geometry
-    const clone1HandleEdgeo = new THREE.EdgesGeometry(handleUp);
-    const clone1HandleEdges = new THREE.LineSegments(clone1HandleEdgeo, handleEdmat);
-    handleUpMesh.add(clone1HandleEdges);
+    // Edge line for Door geometry
+    const doorEdgeo = new THREE.EdgesGeometry(door);
+    const doorEdmat = new THREE.LineBasicMaterial({ color: 'white' });
+    const doorEdges = new THREE.LineSegments(doorEdgeo, doorEdmat);
+    scene.add(doorEdges);
 
-    // Edge line for clone2 handle geometry
-    const clone2HandleEdgeo = new THREE.EdgesGeometry(handleRight);
-    const clone2HandleEdges = new THREE.LineSegments(clone2HandleEdgeo, handleEdmat);
-    clone2HandlesrMesh.add(clone2HandleEdges);
 
-    // Edge line for clone3 handle geometry
-    const clone3HandleEdgeo = new THREE.EdgesGeometry(handleDown);
-    const clone3HandleEdges = new THREE.LineSegments(clone3HandleEdgeo, handleEdmat);
-    clone3HandlesrMesh.add(clone3HandleEdges);
 
-    const ch = new THREE.SphereGeometry(2)
+    const ch = new THREE.SphereGeometry(5)
     const chmat = new THREE.MeshBasicMaterial({ color: 'red', wireframe: false })
     const chmesh = new THREE.Mesh(ch, chmat);
-    chmesh.position.set(origin.x + doorWidth / 2 + 5, origin.y - holeDiameter / 2 + doorHeight - 10);
-    scene.add(chmesh)
+    chmesh.position.set(handleHeight / 2, doorHeight - holeDiameter);
+    // scene.add(chmesh)
 }
 //#endregion
+
+//#region Function 17 (tubeGeometry)
+function fun17() {
+    function pointsIdentification(x, y, z) {
+        const ch = new THREE.SphereGeometry(1)
+        const chmat = new THREE.MeshBasicMaterial({ color: 'blue' })
+        const chmesh = new THREE.Mesh(ch, chmat);
+        chmesh.position.set(x, y, z);
+        scene.add(chmesh)
+    }
+    const origin = new THREE.Vector2(0, 0);
+    const width = 90, height = 90;
+    const depth = 10;
+    var curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(origin.x, origin.y, 0),
+        new THREE.Vector3(origin.x + width, origin.y - width / 10, 0),
+        new THREE.Vector3(origin.x + width + width / 10, origin.y - height, 0),
+        new THREE.Vector3(origin.x, origin.y - height, 0),
+
+    ]);
+    for (let i = 0; i < curve.points.length; i++) {
+        const element = curve.points[i];
+        pointsIdentification(element.x)
+        console.log(element);
+    }
+
+    const geometry = new THREE.TubeGeometry(curve, 10, depth, 10, false);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000, side: THREE.DoubleSide, wireframe: false });
+    const mesh = new THREE.Mesh(geometry, material);
+
+    // Create edges geometry and line segments
+    const edges = new THREE.EdgesGeometry(geometry);
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 'white' });
+    const lineSegments = new THREE.LineSegments(edges, lineMaterial);
+    scene.add(lineSegments)
+
+    scene.add(mesh);
+    camera.position.z = 100;
+}
+//#endregion
+
+//#region Function 18  Object Hierarchy 
+function fun18() {
+
+    const helper = new THREE.AxesHelper(100);
+    scene.add(helper);
+
+    
+    const box = new THREE.BoxGeometry(50 ,50 ,50);
+    const Material = new THREE.MeshBasicMaterial({color : 'red' , wireframe : true});
+    const boxMesh = new THREE.Mesh(box , Material);
+    scene.add(boxMesh);
+    boxMesh.position.set(100, 0 ,0 )
+
+
+    const sphere = new THREE.SphereGeometry(25);
+    const sphereMesh = new THREE.Mesh(sphere , Material);
+    
+    // scene.add(sphereMesh)
+    boxMesh.add(sphereMesh)
+
+}
+//#endregion
+
 
 //#region helper
 document.addEventListener('keyup', (event) => {
@@ -1071,4 +1361,4 @@ function animate() {
 animate();
 //#endregion
 
-// fun14();
+fun17();
