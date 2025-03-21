@@ -19,6 +19,17 @@ const controls = new OrbitControls(camera, renderer.domElement);
 const origin = new THREE.Vector2(0, 0);
 //#endregion
 
+//#region Helper Function
+function pointsIdentification(x, y, z) {
+    const ch = new THREE.SphereGeometry(1)
+    const chmat = new THREE.MeshBasicMaterial({ color: 'blue' })
+    const chmesh = new THREE.Mesh(ch, chmat);
+    chmesh.position.set(x, y, z);
+    scene.add(chmesh)
+}
+
+//#endregion
+
 //#region  function - 1
 function fun1() {
     const height = 2,
@@ -1289,25 +1300,374 @@ function fun17() {
 
 //#region Function 18  Object Hierarchy 
 function fun18() {
+    function createObject3D() {
+        const geometry = new THREE.BoxGeometry(30, 30, 30);
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const mesh = new THREE.Mesh(geometry, material);
+        return mesh;
+    }
+    const helper = new THREE.AxesHelper(100);
+    scene.add(helper);
+    const box = new THREE.BoxGeometry(50, 50, 50);
+    const Material = new THREE.MeshBasicMaterial({ color: 'red', wireframe: true });
+    const boxMesh = new THREE.Mesh(box, Material);
+    scene.add(boxMesh);
+    boxMesh.position.set(100, 0, 0);
+    const sphere = new THREE.SphereGeometry(25);
+    const sphereMesh = new THREE.Mesh(sphere, Material);
+
+    // scene.add(sphereMesh)   // SPHERE BECOME THE CHILD OF THE SCENE
+    boxMesh.add(sphereMesh)    // SPHERE BECOME THE CHILD OF BOX GEOMETRY
+
+    const object3D = createObject3D();
+    sphereMesh.add(object3D);
+
+}
+//#endregion
+
+//#region Function 19  (absarc + quadraticCurve + bezierCurve )
+function fun19() {
 
     const helper = new THREE.AxesHelper(100);
     scene.add(helper);
+    const path = new THREE.Shape();
+    path.moveTo(0, 0);
+    path.lineTo(10, 0);
+    path.lineTo(10, 10);
+    path.absarc(15, 10, 5, Math.PI, 0, true)
+    path.lineTo(25, 10);
+    path.quadraticCurveTo(30, 15, 35, 10);
+    pointsIdentification(30, 15)
+    path.lineTo(40, 10);
+    path.bezierCurveTo(45, 15, 50, 15, 55, 10)
+    pointsIdentification(45, 15)
+    pointsIdentification(50, 15)
+    path.lineTo(60, 10);
 
-    
-    const box = new THREE.BoxGeometry(50 ,50 ,50);
-    const Material = new THREE.MeshBasicMaterial({color : 'red' , wireframe : true});
-    const boxMesh = new THREE.Mesh(box , Material);
-    scene.add(boxMesh);
-    boxMesh.position.set(100, 0 ,0 )
+    path.lineTo(60, 0)
+    const extrudeSettings = {
+        depth: 4,
+    };
 
-
-    const sphere = new THREE.SphereGeometry(25);
-    const sphereMesh = new THREE.Mesh(sphere , Material);
-    
-    // scene.add(sphereMesh)
-    boxMesh.add(sphereMesh)
+    const geo = new THREE.ExtrudeGeometry(path, extrudeSettings);
+    const geoMat = new THREE.MeshBasicMaterial({ color: 'green', wireframe: true });
+    const mesh = new THREE.Mesh(geo, geoMat);
+    scene.add(mesh);
 
 }
+//#endregion
+
+//#region Function 20 (diagonal + side )
+function fun20() {
+    const origin = new THREE.Vector2(0, 0);
+    let doorHeight = 200, doorWidth = 300, holeDiameter = 50, handleHeight = 50, handleWidth = 100;
+
+    // Handle height calculation
+    if (handleHeight < 20) {
+        handleHeight = 20;
+    }
+    if (handleHeight > doorHeight) {
+        handleHeight = doorHeight;
+    }
+    if (holeDiameter + 20 > handleHeight) {
+        holeDiameter = handleHeight - 20;
+    }
+    doorHeight = Math.max(doorHeight, 2 * holeDiameter + 40)
+    // Extrusion 
+    const shapeDeep = 10;
+    const extrudeSetting = {
+        depth: shapeDeep,
+    };
+
+    // Door formation
+    const doorShape = new THREE.Shape();
+    doorShape.moveTo(origin.x + 10, origin.y);
+    doorShape.lineTo(origin.x + doorWidth - 10, origin.y);
+    doorShape.quadraticCurveTo(origin.x + doorWidth, origin.y, origin.x + doorWidth, origin.y + 10)
+    doorShape.lineTo(origin.x + doorWidth, origin.y + doorHeight - 10);
+    doorShape.quadraticCurveTo(origin.x + doorWidth, origin.y + doorHeight, origin.x + doorWidth - 10, origin.y + doorHeight)
+    doorShape.lineTo(origin.x + 10, origin.y + doorHeight);
+    doorShape.quadraticCurveTo(origin.x, origin.y + doorHeight, origin.x, origin.y + doorHeight - 10)
+    doorShape.lineTo(origin.x, origin.y + 10);
+    doorShape.quadraticCurveTo(origin.x, origin.y, origin.x + 10, origin.y)
+
+
+    const doorHoles = [
+        { x: origin.x + holeDiameter, y: origin.y + doorHeight - holeDiameter },
+            // { x: origin.x + holeDiameter / 2 + 5, y: origin.y + doorHeight / 2 },
+            { x: origin.x - holeDiameter / 2 - 5 + doorWidth, y: origin.y + doorHeight / 2 },
+            { x: origin.x + doorWidth / 2, y: origin.y + holeDiameter - 10 },
+        //     { x: origin.x + doorWidth / 2, y: origin.y + doorHeight - holeDiameter + 10 },
+    ];
+    doorHoles.forEach(hole => {
+        const doorHole = new THREE.Path();
+        doorHole.absarc(hole.x, hole.y, holeDiameter / 2, 0, Math.PI * 2, true);
+        doorShape.holes.push(doorHole);
+    });
+
+
+    // const doorHoles = [
+
+    // ];
+    // doorHoles.forEach(hole => {
+    //     const doorHole = new THREE.Path();
+    //     doorHole.absarc(hole.x, hole.y, holeDiameter / 2, 0, Math.PI * 2, true);
+    //     doorShape.holes.push(doorHole);
+    // });
+
+
+
+    // Door Extrusion
+    const door = new THREE.ExtrudeGeometry(doorShape, extrudeSetting);
+    const doormat = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: false });
+    const doorMesh = new THREE.Mesh(door, doormat);
+    scene.add(doorMesh);
+
+    // handle Formaton 
+    let handle = new THREE.Shape();
+    // handle.moveTo(origin.x , origin.y)
+    handle.lineTo(handleHeight / 2 - 5, 0);
+    handle.quadraticCurveTo(handleHeight / 2, 0, handleHeight / 2, 5)
+    handle.lineTo(handleHeight / 2, handleWidth - 5);
+    handle.quadraticCurveTo(handleHeight / 2, handleWidth, handleHeight / 2 - 5, handleWidth)
+    handle.lineTo(-handleHeight / 2 + 5, handleWidth);
+    handle.quadraticCurveTo(-handleHeight / 2, handleWidth, -handleHeight / 2, handleWidth - 5)
+    handle.lineTo(- handleHeight / 2, 5);
+    handle.quadraticCurveTo(- handleHeight / 2, 0, - handleHeight / 2 + 5, 0)
+
+    // Handle Hole 
+    const HandleHole = new THREE.Path();
+    // HandleHole.absarc(0, 0 + holeDiameter / 2, holeDiameter / 2, 0, Math.PI * 2, true);
+    HandleHole.absarc(0, holeDiameter / 2 + 5, holeDiameter / 2, 0, Math.PI * 2, true);
+    handle.holes.push(HandleHole);
+
+
+    //  Diagonal Handle
+    const handles = new THREE.ExtrudeGeometry(handle, { depth: 20 });
+    const handleMesh = new THREE.MeshBasicMaterial({ color: 0x00ff00ff, wireframe: false, side: THREE.DoubleSide });
+    const handlesrMesh = new THREE.Mesh(handles, handleMesh);
+    handlesrMesh.position.set(origin.x + holeDiameter + 14, origin.y + doorHeight - holeDiameter - 14, shapeDeep);
+    handlesrMesh.rotateZ(Math.PI / 4)
+    scene.add(handlesrMesh);
+
+
+    // clone Handle 
+
+    //  Handle DOWN
+    const handleDown = handles.clone();
+    const handleDownMat = new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: false, side: THREE.DoubleSide });
+    const handleDownMatMesh = new THREE.Mesh(handleDown, handleDownMat);
+    handleDownMatMesh.position.set(origin.x + doorWidth / 2, origin.y + holeDiameter + 10, shapeDeep * 2);
+    handleDown.rotateX(Math.PI)
+    scene.add(handleDownMatMesh);
+
+    // Handle RIGHT
+    const handleRight = handles.clone();
+    const handleRightMat = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: false, side: THREE.DoubleSide });
+    const handleRightMatMesh = new THREE.Mesh(handleRight, handleRightMat);
+    handleRightMatMesh.position.set(origin.x + doorWidth - holeDiameter - 10, origin.y + doorHeight / 2, shapeDeep);
+    handleRightMatMesh.rotateZ(-Math.PI / 2);
+    scene.add(handleRightMatMesh);
+
+
+    // Edge line for handle geometry
+    const handleEdgeo = new THREE.EdgesGeometry(handles);
+    const handleEdmat = new THREE.LineBasicMaterial({ color: 'white' });
+    const handleEdges = new THREE.LineSegments(handleEdgeo, handleEdmat);
+    handlesrMesh.add(handleEdges);
+
+    // Edge line for Door geometry
+    const doorEdgeo = new THREE.EdgesGeometry(door);
+    const doorEdmat = new THREE.LineBasicMaterial({ color: 'white' });
+    const doorEdges = new THREE.LineSegments(doorEdgeo, doorEdmat);
+    scene.add(doorEdges);
+
+
+
+    const ch = new THREE.SphereGeometry(5)
+    const chmat = new THREE.MeshBasicMaterial({ color: 'red', wireframe: false })
+    const chmesh = new THREE.Mesh(ch, chmat);
+    chmesh.position.set(handleHeight / 2, doorHeight - holeDiameter);
+    // scene.add(chmesh)
+}
+//#endregion
+
+//#region Function (21 - 24) (Handle)
+const turnRight = false;
+
+//#region Function - 1  Lock Base 
+function fun21() {
+    const width = 10, height = 29, radius = 7;
+    const path = new THREE.Shape();
+    const origin = new THREE.Vector2(0, 0);
+    path.moveTo(origin.x, origin.y + height / 2);
+    path.absarc(origin.x, origin.y + radius, radius, Math.PI * 1.5, Math.PI / 2, false);
+    path.quadraticCurveTo(origin.x - 5, origin.y + radius * 2, origin.x - 5, origin.y + radius * 2 + height / 4)
+    path.lineTo(origin.x - width, origin.y + radius * 2 + height / 4)
+    path.lineTo(origin.x - width, origin.y - height / 4)
+    path.lineTo(origin.x - 5, origin.y - height / 4)
+    path.quadraticCurveTo(origin.x - 5, origin.y, origin.x, origin.y)
+    path.lineTo()
+    const extrudeSettings = {
+        depth: 5,
+        bevelEnabled: false
+    };
+    const geo = new THREE.ExtrudeGeometry(path, extrudeSettings);
+    const geoMat = new THREE.MeshNormalMaterial({ wireframe: false });
+    const mesh = new THREE.Mesh(geo, geoMat);
+    mesh.position.set(0, 56, - 11);
+
+    scene.add(mesh);
+
+    const lock = fun22();
+    path.add(lock);
+
+
+    const circle1 = new THREE.Mesh(new THREE.CircleGeometry(1.5), new THREE.MeshBasicMaterial({ wireframe: false }));
+    const circle2 = new THREE.Mesh(new THREE.CircleGeometry(1.5), new THREE.MeshBasicMaterial({ wireframe: false }));
+    circle1.position.set(-7, 52, - 5.9);
+    circle2.position.set(-7, 72, - 5.9);
+    scene.add(circle1)
+    scene.add(circle2)
+
+
+    if (turnRight) {
+        mesh.rotateY(Math.PI);
+        mesh.position.set(5, 56, - 6)
+        circle1.position.set(12.5, 52, - 5.9);
+        circle2.position.set(12.5, 72, - 5.9);
+    }
+
+}
+//#endregion
+
+//#region Function - 2  // Lock Handle 
+function fun22() {
+    const depth = 5, width = 30, height = 50, slice = 10;
+    const path = new THREE.Shape();
+    const origin = new THREE.Vector2(0, 0);
+    // pointsIdentification(origin.x, origin.y)
+    path.moveTo(origin.x, origin.y);
+    path.absarc(origin.x + depth / 2, origin.y, depth / 2, Math.PI, 0, false);
+    path.lineTo(origin.x + depth, origin.y + height)
+    path.lineTo(origin.x, origin.y + height)
+    const extrudeSettings = {
+        depth: 2,
+        bevelEnabled: false
+    };
+    const geo = new THREE.ExtrudeGeometry(path, extrudeSettings);
+    const geoMat = new THREE.MeshBasicMaterial({ color: 'green', wireframe: false });
+    const mesh = new THREE.Mesh(geo, geoMat);
+    scene.add(mesh);
+
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 'white' });
+    const line = new THREE.Line(geo, lineMaterial);
+    scene.add(line);
+
+    const upperCurve = fun23();
+    path.add(upperCurve)
+
+
+    const upperLock = fun24();
+    path.add(upperLock)
+}
+//#endregion
+
+//#region Function - 3 // Lock Curve
+function fun23() {
+    const help = new THREE.AxesHelper(10);
+    // scene.add(help)
+    const innerRadius = 3, deep = 2;
+    const path = new THREE.Shape();
+    const origin = new THREE.Vector2(0, 50);
+    path.moveTo(origin.x, origin.y);
+    path.absarc(origin.x + innerRadius, origin.y, innerRadius, Math.PI, Math.PI / 2, true);
+    path.absarc(origin.x + innerRadius, origin.y + innerRadius * 2, innerRadius, Math.PI * 1.5, 0, false);
+    path.lineTo(origin.x + innerRadius * 2 - deep, origin.y + innerRadius * 2)
+    path.absarc(origin.x + innerRadius, origin.y + innerRadius * 2, innerRadius - deep, 0, Math.PI * 1.5, true);
+    path.absarc(origin.x + innerRadius, origin.y, innerRadius + deep, Math.PI / 2, Math.PI, false);
+
+    path.lineTo(origin.x, origin.y);
+    // pointsIdentification(origin.x , origin.y)
+
+    const curveWidth = 5;
+    const extrudeSettings = {
+        depth: curveWidth,
+        bevelEnabled: false
+    };
+    const geo = new THREE.ExtrudeGeometry(path, extrudeSettings);
+    const geoMat = new THREE.MeshBasicMaterial({ color: 'red', wireframe: false });
+    const mesh = new THREE.Mesh(geo, geoMat);
+    mesh.rotateY(Math.PI / 2)
+    scene.add(mesh);
+
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 'white' });
+    const line = new THREE.Line(geo, lineMaterial);
+    mesh.add(line);
+}
+//#endregion
+
+//#region Function - 4 // Lock 
+function fun24() {
+    const help = new THREE.AxesHelper(10);
+    // scene.add(help)
+    const lockHeight = 10, lockWidth = 9.5;
+    const path = new THREE.Shape();
+    const origin = new THREE.Vector2(0, 0);
+    path.quadraticCurveTo(origin.x + 1, origin.y, origin.x + 0.5, origin.y + lockHeight / 2);
+    path.quadraticCurveTo(origin.x, origin.y + lockHeight - lockHeight / 4, origin.x - lockWidth / 3, origin.y + lockHeight);
+    path.quadraticCurveTo(origin.x - lockWidth / 3 - lockWidth / 4, origin.y + lockHeight + 0.4, origin.x - lockWidth / 3 - lockWidth / 2, origin.y + lockHeight);
+    path.quadraticCurveTo(origin.x - lockWidth / 3 - lockWidth / 2 - lockWidth / 6, origin.y + lockHeight - lockHeight / 6, origin.x - lockWidth / 3 - lockWidth / 2 - lockWidth / 3, origin.y + lockHeight - lockHeight / 5);
+    path.bezierCurveTo(origin.x - lockWidth / 3 - lockWidth / 2 - lockWidth / 4 - lockWidth / 2, origin.y + lockHeight - lockHeight / 3, origin.x - lockWidth / 3 - lockWidth / 2 - lockWidth, origin.y + lockHeight / 1.5, origin.x - lockWidth / 3 - lockWidth / 2 - lockWidth / 8 - lockWidth / 2, origin.y + lockHeight / 4);
+    path.lineTo(origin.x - lockWidth / 3 - lockWidth / 2 - lockWidth / 3, origin.y + lockHeight / 10);
+    path.lineTo(origin.x - lockWidth / 1.2, origin.y + lockHeight / 15);
+    path.quadraticCurveTo(origin.x - lockWidth / 2, origin.y + lockHeight / 15, origin.x - lockWidth / 2, origin.y - lockHeight / 3)
+    path.lineTo(origin.x + 0.2, origin.y - lockHeight / 3)
+    path.quadraticCurveTo(origin.x + 1, origin.y, origin.x, origin.y + lockHeight / 2)
+
+    const deepLock = 2;
+    const extrudeSettings = {
+        depth: deepLock,
+        bevelEnabled: false
+    };
+    const geo = new THREE.ExtrudeGeometry(path, extrudeSettings);
+    const geoMat = new THREE.MeshBasicMaterial({ color: 'red', wireframe: false });
+    const mesh = new THREE.Mesh(geo, geoMat);
+    mesh.position.set(origin.x + lockWidth / 2, origin.y + 59, -6)
+    if (turnRight) {
+        mesh.rotateY(Math.PI)
+        mesh.position.set(origin.x + 0.25, origin.y + 59, -4)
+    }
+    scene.add(mesh);
+
+    var lineMaterial = new THREE.LineBasicMaterial({ color: 'white' });
+    var line = new THREE.Line(geo, lineMaterial);
+    mesh.add(line);
+
+    const radius = lockHeight / 2.5;
+    const widthSegments = 15;
+    const heightSegments = 15;
+    const phiStart = 0;
+    const phiLength = Math.PI;
+
+    const hemisphereGeometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments, phiStart, phiLength);
+    const matSphere = new THREE.MeshBasicMaterial({ color: 'green', wireframe: false });
+    const sphereMesh = new THREE.Mesh(hemisphereGeometry, matSphere)
+    sphereMesh.position.set(-lockWidth / 2, lockHeight / 2, deepLock - 1);
+    mesh.add(sphereMesh)
+
+    if (turnRight) {
+        sphereMesh.rotateY(Math.PI)
+    }
+
+    var lineMaterial = new THREE.LineBasicMaterial({ color: 'white' });
+    var line = new THREE.Line(hemisphereGeometry, lineMaterial);
+    sphereMesh.add(line);
+
+    return mesh;
+}
+//#endregion
+
 //#endregion
 
 
